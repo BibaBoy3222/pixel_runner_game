@@ -18,5 +18,11 @@
   <div id="score">Score: 0</div>
   <canvas id="gameCanvas" width="480" height="640"></canvas>
   <script src="game.js"></script>
+
+<script>
+  document.addEventListener("click", () => {
+    document.getElementById("bgm").play();
+  }, { once: true });
+</script>
 </body>
 </html>
