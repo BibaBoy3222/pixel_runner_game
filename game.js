@@ -1,4 +1,8 @@
 
+let backgroundImg = new Image();
+backgroundImg.src = "images/background.png";
+let bgY = 0;
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -70,7 +74,15 @@ function update() {
     if (keys["ArrowLeft"] && ship.x > 0) ship.x -= ship.speed;
     if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += ship.speed;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+// Фон
+bgY += 1;
+if (bgY >= canvas.height) bgY = 0;
+ctx.drawImage(backgroundImg, 0, bgY - canvas.height, canvas.width, canvas.height);
+ctx.drawImage(backgroundImg, 0, bgY, canvas.width, canvas.height);
+
     drawShip();
     drawBullets();
     drawAsteroids();
@@ -129,7 +141,15 @@ function updateGameWithBoss() {
   if (keys["ArrowLeft"] && ship.x > 0) ship.x -= ship.speed;
   if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += ship.speed;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+// Фон
+bgY += 1;
+if (bgY >= canvas.height) bgY = 0;
+ctx.drawImage(backgroundImg, 0, bgY - canvas.height, canvas.width, canvas.height);
+ctx.drawImage(backgroundImg, 0, bgY, canvas.width, canvas.height);
+
   drawShip();
   drawBullets();
   drawAsteroids();
