@@ -81,3 +81,62 @@ function update() {
 
 setInterval(spawnAsteroid, 1000);
 update();
+
+
+// Уровни и боссы
+let level = 1;
+let boss = null;
+
+function spawnBoss() {
+  boss = { x: canvas.width / 2 - 50, y: 50, width: 100, height: 100, hp: 100, speed: 1 };
+}
+
+function drawBoss() {
+  if (!boss) return;
+  ctx.fillStyle = "red";
+  ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+  boss.x += boss.speed;
+  if (boss.x <= 0 || boss.x + boss.width >= canvas.width) boss.speed *= -1;
+
+  bullets.forEach((b, bi) => {
+    if (b.x < boss.x + boss.width && b.x + 10 > boss.x && b.y < boss.y + boss.height && b.y + 20 > boss.y) {
+      bullets.splice(bi, 1);
+      boss.hp -= 5;
+      if (boss.hp <= 0) {
+        score += 100;
+        boss = null;
+        level += 1;
+        document.getElementById("score").innerText = "Score: " + score;
+      }
+    }
+  });
+}
+
+// Усложнение игры
+setInterval(() => {
+  if (score > 0 && score % 100 === 0 && !boss) {
+    spawnBoss();
+  }
+}, 1000);
+
+// Отображение уровня
+setInterval(() => {
+  document.getElementById("score").innerText = "Score: " + score + " | Level: " + level;
+}, 500);
+
+// Включаем отрисовку босса
+function updateGameWithBoss() {
+  if (keys["ArrowLeft"] && ship.x > 0) ship.x -= ship.speed;
+  if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += ship.speed;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawShip();
+  drawBullets();
+  drawAsteroids();
+  detectCollisions();
+  drawBoss();
+
+  requestAnimationFrame(updateGameWithBoss);
+}
+
+updateGameWithBoss();
