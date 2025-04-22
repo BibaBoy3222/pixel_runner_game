@@ -20,13 +20,19 @@
       background: black;
       touch-action: none;
     }
-    #score {
+    #score, #leaderboard {
       position: absolute;
       top: 10px;
       left: 10px;
       color: white;
       font: bold 18px monospace;
       z-index: 10;
+    }
+    #leaderboard {
+      top: 40px;
+      font-weight: normal;
+      font-size: 14px;
+      white-space: pre;
     }
     .controls {
       position: absolute;
@@ -46,14 +52,42 @@
       border-radius: 10px;
       touch-action: none;
     }
+    #nameInput {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      background: black;
+      border: 2px solid white;
+      color: white;
+      font-size: 20px;
+      padding: 10px;
+    }
+    #submitName {
+      display: block;
+      margin: 10px auto 0;
+      background: white;
+      color: black;
+      padding: 8px 16px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div id="score">Score: 0</div>
+  <div id="leaderboard"></div>
   <canvas id="gameCanvas"></canvas>
   <div class="controls">
     <button id="left">◀</button>
     <button id="right">▶</button>
+  </div>
+  <div id="nameInput">
+    <div>Enter your name:</div>
+    <input type="text" id="playerName" maxlength="12">
+    <button id="submitName">Start</button>
   </div>
   <script src="game.js"></script>
 </body>

@@ -1,4 +1,30 @@
 
+let playerName = "";
+let leaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+
+document.getElementById("submitName").onclick = () => {
+  const input = document.getElementById("playerName");
+  if (input.value.trim() === "") return;
+  playerName = input.value.trim();
+  document.getElementById("nameInput").style.display = "none";
+  update(); // запустить игру
+};
+
+function endGame() {
+  leaderboard.push({ name: playerName, score });
+  leaderboard.sort((a, b) => b.score - a.score);
+  leaderboard = leaderboard.slice(0, 5);
+  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  drawLeaderboard();
+}
+
+function drawLeaderboard() {
+  let lb = leaderboard.map((e, i) => `${i + 1}. ${e.name}: ${e.score}`).join("\n");
+  document.getElementById("leaderboard").innerText = lb;
+}
+
+
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
