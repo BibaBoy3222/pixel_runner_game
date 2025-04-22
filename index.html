@@ -4,25 +4,34 @@
 <head>
   <meta charset="UTF-8">
   <title>Pixel Runner</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <style>
-    body { margin: 0; overflow: hidden; background: black; }
-    canvas { display: block; margin: auto; background: #000; }
-    #score { position: absolute; top: 10px; left: 10px; color: white; font: bold 20px monospace; }
+    body, html { margin: 0; padding: 0; background: black; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; background: black; }
+    #score {
+      position: absolute; top: 10px; left: 10px; color: white;
+      font: bold 18px monospace; z-index: 10;
+    }
+    .controls {
+      position: absolute; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 20px; z-index: 10;
+    }
+    .controls button {
+      background: rgba(255,255,255,0.1);
+      border: 2px solid white; color: white;
+      padding: 15px 20px; font-size: 20px; border-radius: 10px;
+    }
   </style>
-  <audio id="bgm" autoplay loop>
-    <source src="audio/game_music.mp3" type="audio/mpeg">
-  </audio>
 </head>
 <body>
   <div id="score">Score: 0</div>
-  <canvas id="gameCanvas" width="480" height="640"></canvas>
+  <canvas id="gameCanvas"></canvas>
+  <div class="controls">
+    <button id="left">◀</button>
+    <button id="fire">🔥</button>
+    <button id="right">▶</button>
+  </div>
   <script src="game.js"></script>
-
-<script>
-  document.addEventListener("click", () => {
-    document.getElementById("bgm").play();
-  }, { once: true });
-</script>
 </body>
 </html>
