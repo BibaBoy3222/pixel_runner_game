@@ -73,15 +73,22 @@ function shoot() {
   bullets.push({ x: ship.x + ship.width/2 - 5, y: ship.y, speed: 7 });
 }
 document.addEventListener("keydown", (e) => { if (e.code === "Space") shoot(); });
-document.getElementById("left").addEventListener("touchstart", () => keys["ArrowLeft"] = true);
-document.getElementById("left").addEventListener("touchend", () => keys["ArrowLeft"] = false);
-document.getElementById("right").addEventListener("touchstart", () => keys["ArrowRight"] = true);
-document.getElementById("right").addEventListener("touchend", () => keys["ArrowRight"] = false);
-document.getElementById("fire").addEventListener("click", shoot);
-canvas.addEventListener("click", shoot);
+document.getElementById("left").addEventListener("touchstart", (e) => { e.preventDefault(); keys["ArrowLeft"] = true; });
+document.getElementById("left").addEventListener("touchend", (e) => { e.preventDefault(); keys["ArrowLeft"] = false; });
+document.getElementById("right").addEventListener("touchstart", (e) => { e.preventDefault(); keys["ArrowRight"] = true; });
+document.getElementById("right").addEventListener("touchend", (e) => { e.preventDefault(); keys["ArrowRight"] = false; });
+canvas.addEventListener("click", (e) => { e.preventDefault(); shoot(); });
 
+let shootCooldown = 0;
 function update() {
   if (keys["ArrowLeft"] && ship.x > 0) ship.x -= ship.speed;
+  if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += ship.speed;
+
+  shootCooldown--;
+  if ((keys["ArrowLeft"] || keys["ArrowRight"]) && shootCooldown <= 0) {
+    shoot();
+    shootCooldown = 15;
+  }
   if (keys["ArrowRight"] && ship.x < canvas.width - ship.width) ship.x += ship.speed;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
