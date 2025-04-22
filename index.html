@@ -7,8 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       background: black;
       overflow: hidden;
       touch-action: none;
@@ -20,7 +19,7 @@
       background: black;
       touch-action: none;
     }
-    #score, #leaderboard {
+    #score, #leaderboard, #coinsDisplay {
       position: absolute;
       top: 10px;
       left: 10px;
@@ -28,12 +27,9 @@
       font: bold 18px monospace;
       z-index: 10;
     }
-    #leaderboard {
-      top: 40px;
-      font-weight: normal;
-      font-size: 14px;
-      white-space: pre;
-    }
+    #leaderboard { top: 40px; font-weight: normal; font-size: 14px; white-space: pre; }
+    #coinsDisplay { top: 70px; }
+
     .controls {
       position: absolute;
       bottom: 20px;
@@ -52,21 +48,33 @@
       border-radius: 10px;
       touch-action: none;
     }
-    #nameInput {
+
+    #nameInput, #shop {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       z-index: 100;
       background: black;
       border: 2px solid white;
       color: white;
-      font-size: 20px;
-      padding: 10px;
+      font-size: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
+    #shop h2 { margin-top: 0; }
+    .shop-item {
+      margin: 5px 0;
+    }
+    .shop-item button {
+      margin-left: 10px;
+      font-size: 16px;
+    }
+
     #submitName {
-      display: block;
-      margin: 10px auto 0;
+      margin-top: 10px;
       background: white;
       color: black;
       padding: 8px 16px;
@@ -79,16 +87,29 @@
 <body>
   <div id="score">Score: 0</div>
   <div id="leaderboard"></div>
+  <div id="coinsDisplay">Coins: 0</div>
   <canvas id="gameCanvas"></canvas>
   <div class="controls">
     <button id="left">◀</button>
     <button id="right">▶</button>
   </div>
+
   <div id="nameInput">
     <div>Enter your name:</div>
     <input type="text" id="playerName" maxlength="12">
     <button id="submitName">Start</button>
   </div>
+
+  <div id="shop" style="display: none;">
+    <h2>Upgrade Shop</h2>
+    <div class="shop-item">Faster Shooting: <span id="shootLvl">0</span>
+      <button onclick="buyUpgrade('shootSpeed')">Buy</button></div>
+    <div class="shop-item">Faster Movement: <span id="speedLvl">0</span>
+      <button onclick="buyUpgrade('moveSpeed')">Buy</button></div>
+    <div class="shop-item">Permanent Triple Shot: <span id="tripleLvl">0</span>
+      <button onclick="buyUpgrade('tripleShot')">Buy</button></div>
+  </div>
+
   <script src="game.js"></script>
 </body>
 </html>

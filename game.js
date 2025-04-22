@@ -1,4 +1,161 @@
 
+let coins = parseInt(localStorage.getItem("coins") || "0");
+let upgradesStore = JSON.parse(localStorage.getItem("upgrades") || 
+  '{"shootSpeed":0,"moveSpeed":0,"tripleShot":0}');
+document.getElementById("coinsDisplay").innerText = "Coins: " + coins;
+
+function updateUpgradeDisplay() {
+  document.getElementById("shootLvl").innerText = upgradesStore.shootSpeed;
+  document.getElementById("speedLvl").innerText = upgradesStore.moveSpeed;
+  document.getElementById("tripleLvl").innerText = upgradesStore.tripleShot;
+  document.getElementById("coinsDisplay").innerText = "Coins: " + coins;
+}
+
+function buyUpgrade(type) {
+  const costs = { shootSpeed: 10, moveSpeed: 10, tripleShot: 25 };
+  const cost = costs[type] + upgradesStore[type] * 10;
+  if (coins >= cost) {
+    coins -= cost;
+    upgradesStore[type]++;
+    localStorage.setItem("coins", coins);
+    localStorage.setItem("upgrades", JSON.stringify(upgradesStore));
+    updateUpgradeDisplay();
+  } else {
+    alert("Not enough coins!");
+  }
+}
+
+document.getElementById("submitName").onclick = () => {
+  const input = document.getElementById("playerName");
+  if (input.value.trim() === "") return;
+  playerName = input.value.trim();
+  document.getElementById("nameInput").style.display = "none";
+  document.getElementById("shop").style.display = "block";
+  updateUpgradeDisplay();
+};
+
+setTimeout(() => {
+  const playBtn = document.createElement("button");
+  playBtn.innerText = "Play";
+  playBtn.onclick = () => {
+    document.getElementById("shop").style.display = "none";
+    update();
+  };
+  document.getElementById("shop").appendChild(playBtn);
+}, 500);
+
+function endGame() {
+  leaderboard.push({ name: playerName, score });
+  leaderboard.sort((a, b) => b.score - a.score);
+  leaderboard = leaderboard.slice(0, 5);
+  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  coins += Math.floor(score / 10);
+  localStorage.setItem("coins", coins);
+  drawLeaderboard();
+}
+
+
+
+let level = 1;
+let levelTime = 0;
+let boss = null;
+let upgrades = {
+  tripleShot: false,
+  speedBoost: false
+};
+
+function drawLevel() {
+  ctx.fillStyle = "white";
+  ctx.font = "16px monospace";
+  ctx.fillText("Level: " + level, 10, 50);
+  if (boss) {
+    ctx.fillText("Boss HP: " + boss.hp, 10, 70);
+  }
+}
+
+function spawnBoss() {
+  boss = {
+    x: canvas.width / 2 - 60,
+    y: 0,
+    width: 120,
+    height: 60,
+    hp: 20 + level * 10,
+    speed: 1 + level * 0.2
+  };
+}
+
+function drawBoss() {
+  if (!boss) return;
+  ctx.fillStyle = "red";
+  ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+  boss.y += boss.speed;
+  if (boss.y > canvas.height - 100) boss.y = canvas.height - 100;
+}
+
+function detectBossHit() {
+  if (!boss) return;
+  bullets.forEach((b, bi) => {
+    if (
+      b.x < boss.x + boss.width &&
+      b.x + 10 > boss.x &&
+      b.y < boss.y + boss.height &&
+      b.y + 20 > boss.y
+    ) {
+      bullets.splice(bi, 1);
+      boss.hp -= 1;
+      if (boss.hp <= 0) {
+        score += 100;
+        boss = null;
+        level++;
+        spawnUpgrade();
+      }
+    }
+  });
+}
+
+function shoot() {
+  bullets.push({ x: ship.x + ship.width/2 - 5, y: ship.y, speed: 7 });
+  if (upgrades.tripleShot) {
+    bullets.push({ x: ship.x + 5, y: ship.y, speed: 7 });
+    bullets.push({ x: ship.x + ship.width - 15, y: ship.y, speed: 7 });
+  }
+}
+
+function spawnUpgrade() {
+  upgradesOnField.push({
+    x: Math.random() * (canvas.width - 30),
+    y: -30,
+    type: Math.random() > 0.5 ? "tripleShot" : "speedBoost",
+    speed: 2
+  });
+}
+
+let upgradesOnField = [];
+function drawUpgrades() {
+  upgradesOnField.forEach((u, i) => {
+    ctx.fillStyle = u.type === "tripleShot" ? "cyan" : "orange";
+    ctx.fillRect(u.x, u.y, 30, 30);
+    u.y += u.speed;
+
+    if (
+      u.x < ship.x + ship.width &&
+      u.x + 30 > ship.x &&
+      u.y < ship.y + ship.height &&
+      u.y + 30 > ship.y
+    ) {
+      upgradesOnField.splice(i, 1);
+      if (u.type === "tripleShot") {
+        upgrades.tripleShot = true;
+        setTimeout(() => upgrades.tripleShot = false, 10000);
+      } else {
+        ship.speed += 2;
+        setTimeout(() => ship.speed -= 2, 10000);
+      }
+    }
+  });
+}
+
+
 let playerName = "";
 let leaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
 
@@ -128,6 +285,19 @@ function update() {
   drawBullets();
   drawAsteroids();
   detectCollisions();
+
+  
+  levelTime++;
+  if (levelTime > 1800 && !boss) {
+    level++;
+    levelTime = 0;
+    if (level % 3 === 0) spawnBoss();
+  }
+
+  drawBoss();
+  detectBossHit();
+  drawLevel();
+  drawUpgrades();
 
   requestAnimationFrame(update);
 }
