@@ -1,4 +1,42 @@
 
+let maxAsteroids = 5;
+let asteroidCooldown = 0;
+let gameRunning = true;
+
+function spawnAsteroid() {
+  if (asteroids.length < maxAsteroids && asteroidCooldown <= 0) {
+    let x = Math.random() * (canvas.width - 40);
+    asteroids.push({ x: x, y: -40, speed: 1 + Math.random() * 1.5 + level * 0.2 });
+    asteroidCooldown = 30 + Math.random() * 30;
+  }
+}
+
+function detectPlayerHit() {
+  // asteroids
+  for (let a of asteroids) {
+    if (a.x < ship.x + ship.width && a.x + 40 > ship.x &&
+        a.y < ship.y + ship.height && a.y + 40 > ship.y) {
+      gameOver();
+      return;
+    }
+  }
+  // boss
+  if (boss && boss.x < ship.x + ship.width && boss.x + boss.width > ship.x &&
+      boss.y < ship.y + ship.height && boss.y + boss.height > ship.y) {
+    gameOver();
+  }
+}
+
+function gameOver() {
+  gameRunning = false;
+  ctx.fillStyle = "red";
+  ctx.font = "36px monospace";
+  ctx.fillText("GAME OVER", canvas.width / 2 - 100, canvas.height / 2);
+  endGame();
+}
+
+
+
 let coins = parseInt(localStorage.getItem("coins") || "0");
 let upgradesStore = JSON.parse(localStorage.getItem("upgrades") || 
   '{"shootSpeed":0,"moveSpeed":0,"tripleShot":0}');
@@ -89,7 +127,7 @@ function drawBoss() {
   ctx.fillStyle = "red";
   ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
   boss.y += boss.speed;
-  if (boss.y > canvas.height - 100) boss.y = canvas.height - 100;
+  if (boss.y > 100) boss.y = 100;
 }
 
 function detectBossHit() {
@@ -299,7 +337,12 @@ function update() {
   drawLevel();
   drawUpgrades();
 
-  requestAnimationFrame(update);
+  
+  detectPlayerHit();
+  asteroidCooldown--;
+  spawnAsteroid();
+  requestAnimationFrame(() => { if (gameRunning) update(); });
+
 }
 
 setInterval(spawnAsteroid, 1000);
